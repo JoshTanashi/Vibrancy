@@ -2,16 +2,11 @@
 
 import { AnimatePresence, motion } from "framer-motion";
 import { useEffect, useRef, useState } from "react";
-import { EASE_REASONED } from "@/lib/motion";
+import { EASE_REASONED, FOCUS_RING } from "@/lib/motion";
 
-const STATEMENTS = [
-  "Health is a system.",
-  "Systems need order.",
-  "Order requires evidence.",
-  "This is Vibrancy.",
-];
-
-const STATEMENT_DURATION_MS = 1100;
+const BAR_FILL_DURATION_S = 1.6;
+const HOLD_AFTER_FILL_MS = 350;
+const TOTAL_AUTO_COMPLETE_MS = BAR_FILL_DURATION_S * 1000 + HOLD_AFTER_FILL_MS;
 
 interface IntroSequenceProps {
   onComplete: () => void;
@@ -19,25 +14,24 @@ interface IntroSequenceProps {
 }
 
 export function IntroSequence({ onComplete, children }: IntroSequenceProps) {
-  const [index, setIndex] = useState(0);
-  const [skipped, setSkipped] = useState(false);
-  const done = skipped || index >= STATEMENTS.length;
+  const [done, setDone] = useState(false);
   const hasCompletedRef = useRef(false);
 
   useEffect(() => {
-    if (!done) {
-      const timer = setTimeout(() => setIndex((current) => current + 1), STATEMENT_DURATION_MS);
-      return () => clearTimeout(timer);
-    }
+    if (done) return;
+    const timer = setTimeout(() => setDone(true), TOTAL_AUTO_COMPLETE_MS);
+    return () => clearTimeout(timer);
+  }, [done]);
 
-    if (!hasCompletedRef.current) {
+  useEffect(() => {
+    if (done && !hasCompletedRef.current) {
       hasCompletedRef.current = true;
       onComplete();
     }
-  }, [index, done, onComplete]);
+  }, [done, onComplete]);
 
   function skip() {
-    setSkipped(true);
+    setDone(true);
   }
 
   return (
@@ -49,22 +43,32 @@ export function IntroSequence({ onComplete, children }: IntroSequenceProps) {
             exit={{ opacity: 0, transition: { duration: 0.5, ease: EASE_REASONED } }}
             className="fixed inset-0 z-50 flex items-center justify-center bg-paper"
           >
-            <AnimatePresence mode="wait">
+            <div className="flex flex-col items-center gap-4">
               <motion.p
-                key={index}
-                initial={{ opacity: 0, y: 16 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -16 }}
-                transition={{ duration: 0.5, ease: EASE_REASONED }}
-                className="px-6 text-center font-serif text-h1 text-ink"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ duration: 0.4, ease: EASE_REASONED }}
+                className="font-serif text-h3 text-ink"
               >
-                {STATEMENTS[index]}
+                Vibrancy
               </motion.p>
-            </AnimatePresence>
+
+              <div aria-hidden="true" className="h-px w-40 overflow-hidden bg-line sm:w-48">
+                <motion.div
+                  initial={{ scaleX: 0 }}
+                  animate={{ scaleX: 1 }}
+                  transition={{ duration: BAR_FILL_DURATION_S, ease: EASE_REASONED }}
+                  style={{ transformOrigin: "left" }}
+                  className="h-full w-full bg-accent"
+                />
+              </div>
+            </div>
+
             <button
               type="button"
               onClick={skip}
-              className="absolute bottom-8 right-8 font-mono text-label uppercase text-ink-muted hover:text-accent-ink"
+              aria-label="Skip intro animation"
+              className={`absolute bottom-8 right-8 font-mono text-label uppercase text-ink-faint transition-colors hover:text-ink-muted ${FOCUS_RING}`}
             >
               Skip
             </button>
