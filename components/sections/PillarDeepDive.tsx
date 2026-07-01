@@ -1,7 +1,11 @@
+"use client";
+
+import { motion } from "framer-motion";
 import clsx from "clsx";
 import { Reveal } from "@/components/ui/Reveal";
 import { SectionNumber } from "@/components/ui/SectionNumber";
 import { ImagePlaceholder } from "@/components/ui/ImagePlaceholder";
+import { clipReveal } from "@/lib/motion";
 import type { PillarDeepDiveContent } from "@/types/content";
 
 interface PillarDeepDiveProps {
@@ -58,14 +62,19 @@ export function PillarDeepDive({ content, reverse }: PillarDeepDiveProps) {
             </ul>
           </Reveal>
 
-          <Reveal delay={0.1}>
+          <motion.div
+            variants={clipReveal}
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, margin: "-60px" }}
+          >
             <ImagePlaceholder
               width={content.image.width}
               height={content.image.height}
               caption={content.image.caption}
               className="rounded-2xl"
             />
-          </Reveal>
+          </motion.div>
         </div>
       </div>
     </section>

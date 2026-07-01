@@ -1,15 +1,16 @@
 @import "tailwindcss";
 
 @theme {
-  /* Colors — warm ivory paper, soft-dark ink, single confident emerald accent */
-  --color-paper: #fbf7ef;
-  --color-paper-raised: #f5efe3;
-  --color-ink: #2a2622;
-  --color-ink-muted: #5c5650;
-  --color-ink-faint: #8a8276;
-  --color-accent: #0f8b6c;
-  --color-accent-ink: #08503f;
-  --color-line: #dcd4c2;
+  /* Colors — blue/navy palette, confident professional healthcare */
+  --color-paper: #f4f7fb;
+  --color-paper-raised: #e8eef6;
+  --color-ink: #162040;
+  --color-ink-muted: #4a618a;
+  --color-ink-faint: #7b93b3;
+  --color-accent: #1a6db5;
+  --color-accent-ink: #0e4d8a;
+  --color-line: #c4d3e6;
+  --color-surface-dark: #0d2848;
 
   /* Fonts */
   --font-serif: var(--font-fraunces), ui-serif, Georgia, serif;
